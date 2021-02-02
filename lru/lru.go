@@ -82,7 +82,7 @@ func (c *Cache) Del(key string) (ok bool) {
 		c.removeElement(el)
 
 		e := el.Value.(*entry)
-		c.UpdateUsedBytes(e)
+		c.updateUsedBytes(e)
 
 		return true
 	}
@@ -97,7 +97,7 @@ func (c *Cache) RemoveOldest() (key, value interface{}, ok bool) {
 		c.removeElement(el)
 
 		e := el.Value.(*entry)
-		c.UpdateUsedBytes(e)
+		c.updateUsedBytes(e)
 
 		return e.key, e.val, true
 	}
@@ -116,7 +116,7 @@ func (c *Cache) removeElement(el *list.Element) {
 	}
 }
 
-func (c *Cache) UpdateUsedBytes(el *entry) {
+func (c *Cache) updateUsedBytes(el *entry) {
 	oldLen := len(el.key) + el.val.Len()
 	c.usedBytes -= int64(oldLen)
 }
