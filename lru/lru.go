@@ -24,6 +24,8 @@ type entry struct {
 	val Value
 }
 
+type String string
+
 type Value interface {
 	Len() int
 }
@@ -90,6 +92,9 @@ func (c *Cache) RemoveOldest() (key, value interface{}, ok bool) {
 	if el != nil {
 		c.removeElement(el)
 		e := el.Value.(*entry)
+
+		oldLen := len(e.key) + e.val.Len()
+		c.usedBytes -= int64(oldLen)
 		return e.key, e.val, true
 	}
 
@@ -163,10 +168,6 @@ func (c *Cache) Equal(x, y []string) bool {
 	return true
 }
 
-func (c *Cache) Len() int {
-	if c.items == nil {
-		return 0
-	}
-
-	return c.ll.Len()
+func (s String) Len() int {
+	return len(s)
 }

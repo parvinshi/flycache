@@ -4,13 +4,6 @@ import (
 	"testing"
 )
 
-type String string
-
-
-func (s String) Len() int {
-	return len(s)
-}
-
 func TestGet(t *testing.T) {
 	c, _ := New(int64(0), nil)
 	c.Set("k1", String("111"))
@@ -49,15 +42,13 @@ func TestDel(t *testing.T) {
 func TestRemoveOldest(t *testing.T) {
 	k1, k2, k3 := "k1", "k2", "k3"
 	v1, v2, v3 := "v1", "v2", "v3"
-	cap := len(k1 + k2 + v1 + v2)
-	c, _ := New(int64(cap), nil)
+	cap_ := len(k1 + k2 + v1 + v2)
+	c, _ := New(int64(cap_), nil)
 	c.Set(k1, String(v1))
 	c.Set(k2, String(v2))
 	c.Set(k3, String(v3))
 
-	c.RemoveOldest()
-
-	if _, ok := c.Get("k1"); ok || c.Len() != 2 {
+	if _, ok := c.Get("k1"); ok || c.ll.Len() != 2 {
 		t.Fatalf("Removeoldest key1 failed")
 	}
 }
