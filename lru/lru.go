@@ -80,6 +80,10 @@ func (c *Cache) Set(key string, val Value) {
 func (c *Cache) Del(key string) (ok bool) {
 	if el, ok := c.items[key]; ok {
 		c.removeElement(el)
+
+		e := el.Value.(*entry)
+		c.UpdateUsedBytes(e)
+
 		return true
 	}
 
@@ -91,10 +95,10 @@ func (c *Cache) RemoveOldest() (key, value interface{}, ok bool) {
 	el := c.ll.Back()
 	if el != nil {
 		c.removeElement(el)
-		e := el.Value.(*entry)
 
-		oldLen := len(e.key) + e.val.Len()
-		c.usedBytes -= int64(oldLen)
+		e := el.Value.(*entry)
+		c.UpdateUsedBytes(e)
+
 		return e.key, e.val, true
 	}
 
@@ -110,6 +114,11 @@ func (c *Cache) removeElement(el *list.Element) {
 	if c.OnEvicted != nil {
 		c.OnEvicted(e.key, e.val)
 	}
+}
+
+func (c *Cache) UpdateUsedBytes(el *entry) {
+	oldLen := len(el.key) + el.val.Len()
+	c.usedBytes -= int64(oldLen)
 }
 
 //GetOldest returns the oldest entry
